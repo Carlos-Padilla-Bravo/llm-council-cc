@@ -1,0 +1,10 @@
+# Council output — never belongs in the skill repo
+council-transcripts/
+
+# OS / editor noise
+.DS_Store
+Thumbs.db
+desktop.ini
+*.swp
+.vscode/
+.idea/

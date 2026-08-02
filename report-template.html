@@ -1,0 +1,253 @@
+<!DOCTYPE html>
+<html lang="{{LANG}}">
+<head>
+<meta charset="utf-8">
+<meta name="viewport" content="width=device-width, initial-scale=1">
+<title>{{TOPIC}} — Council Verdict</title>
+<style>
+/* ─────────────────────────────────────────────────────────────
+   DESIGN TOKENS
+   Dark-first, tech/AI register: near-black canvas, monospace
+   metadata, electric accent, hairline rules.
+   A brand-identity skill should override ONLY these values.
+   Never hardcode a specific person's brand into this file.
+   ───────────────────────────────────────────────────────────── */
+:root{
+  --font-display:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-body:"Inter",-apple-system,BlinkMacSystemFont,"Segoe UI",Helvetica,Arial,sans-serif;
+  --font-mono:"JetBrains Mono",ui-monospace,SFMono-Regular,"SF Mono",Menlo,Consolas,monospace;
+
+  --bg:#0a0c10;
+  --bg-panel:#12151c;
+  --bg-raised:#171b24;
+  --ink:#e7ebf3;
+  --ink-soft:#9aa4b8;
+  --ink-faint:#606b80;
+  --rule:#1e2430;
+  --rule-bright:#2a3240;
+
+  --accent:#6e8bff;          /* primary — headings, links, emphasis */
+  --accent-dim:#3d4d8f;
+  --accent-wash:rgba(110,139,255,.09);
+  --agree:#2fd4a0;           /* convergence */
+  --clash:#ff8a5c;           /* disagreement */
+  --blind:#b07bff;           /* blind spots */
+
+  --radius:8px;
+  --gap:2.1rem;
+  --measure:76ch;
+}
+@media (prefers-color-scheme:light){
+  :root{
+    --bg:#fbfcfe; --bg-panel:#f2f4f8; --bg-raised:#ffffff;
+    --ink:#0f1420; --ink-soft:#4d5769; --ink-faint:#8b95a8;
+    --rule:#e2e6ee; --rule-bright:#cdd4e0;
+    --accent:#3450e0; --accent-dim:#93a4f0; --accent-wash:rgba(52,80,224,.06);
+    --agree:#0f8f68; --clash:#c9531f; --blind:#7439cc;
+  }
+}
+
+*{box-sizing:border-box}
+html{-webkit-text-size-adjust:100%}
+body{
+  margin:0;padding:0 1.25rem 6rem;
+  background:var(--bg);color:var(--ink);
+  font-family:var(--font-body);font-size:16.5px;line-height:1.68;
+  -webkit-font-smoothing:antialiased;
+  background-image:radial-gradient(ellipse 900px 420px at 50% -220px,var(--accent-wash),transparent 70%);
+  background-repeat:no-repeat;
+}
+main{max-width:var(--measure);margin:0 auto;padding-top:4rem}
+
+/* ── header ── */
+.eyebrow{
+  font-family:var(--font-mono);font-size:.7rem;letter-spacing:.18em;
+  text-transform:uppercase;color:var(--accent);margin:0 0 .9rem;
+  display:flex;align-items:center;gap:.55rem;
+}
+.eyebrow::before{
+  content:"";width:6px;height:6px;border-radius:50%;
+  background:var(--accent);box-shadow:0 0 0 3px var(--accent-wash);flex:none;
+}
+.eyebrow .sep{color:var(--ink-faint)}
+h1{
+  font-family:var(--font-display);font-size:clamp(1.9rem,5vw,2.7rem);
+  line-height:1.12;letter-spacing:-.03em;font-weight:650;
+  margin:0 0 1.3rem;color:var(--ink);
+}
+.question{
+  border-left:2px solid var(--accent);background:var(--bg-panel);
+  padding:1.05rem 1.2rem;border-radius:0 var(--radius) var(--radius) 0;
+  color:var(--ink-soft);font-size:.94rem;margin:0 0 3rem;
+}
+.question .label{
+  display:block;font-family:var(--font-mono);font-size:.65rem;
+  letter-spacing:.14em;text-transform:uppercase;color:var(--ink-faint);
+  margin-bottom:.45rem;
+}
+
+/* ── sections ── */
+section{margin:0 0 var(--gap);padding-top:var(--gap);border-top:1px solid var(--rule)}
+section:first-of-type{border-top:none;padding-top:0}
+h2{
+  font-family:var(--font-mono);font-size:.74rem;font-weight:500;
+  letter-spacing:.15em;text-transform:uppercase;color:var(--ink-faint);
+  margin:0 0 1rem;display:flex;align-items:center;gap:.6rem;
+}
+h2::before{
+  content:"";width:.5rem;height:.5rem;border-radius:1px;
+  background:var(--accent);flex:none;transform:rotate(45deg);
+}
+#agrees h2::before{background:var(--agree)}
+#clashes h2::before{background:var(--clash)}
+#blindspots h2::before{background:var(--blind)}
+p{margin:0 0 .95rem}
+ul{margin:0 0 .95rem;padding-left:1.1rem}
+li{margin:0 0 .5rem}
+li::marker{color:var(--ink-faint)}
+strong{font-weight:600;color:var(--ink)}
+code{
+  font-family:var(--font-mono);font-size:.86em;
+  background:var(--bg-panel);border:1px solid var(--rule);
+  padding:.1em .38em;border-radius:4px;
+}
+
+/* ── ranking table ── */
+.table-wrap{overflow-x:auto;margin:0 0 .9rem;-webkit-overflow-scrolling:touch}
+table{border-collapse:collapse;width:100%;font-size:.9rem;min-width:26rem}
+th,td{text-align:left;padding:.62rem .75rem;border-bottom:1px solid var(--rule)}
+th{
+  font-family:var(--font-mono);font-size:.64rem;letter-spacing:.13em;
+  text-transform:uppercase;color:var(--ink-faint);font-weight:500;
+  border-bottom-color:var(--rule-bright);
+}
+td.num{font-family:var(--font-mono);text-align:right;white-space:nowrap;color:var(--ink-soft)}
+tbody tr:first-child td{color:var(--ink);font-weight:600}
+tbody tr:first-child td.num{color:var(--accent)}
+.note{font-size:.87rem;color:var(--ink-soft);margin:.5rem 0 0}
+
+/* ── the two payload blocks ── */
+.recommendation{
+  background:var(--bg-panel);border:1px solid var(--rule);
+  border-radius:var(--radius);padding:1.3rem 1.4rem;
+}
+.recommendation p:last-child,.first-step p:last-child{margin-bottom:0}
+.first-step{
+  border:1px solid var(--accent-dim);border-radius:var(--radius);
+  padding:1.3rem 1.4rem;background:var(--bg-raised);
+  box-shadow:0 0 0 1px var(--accent-wash),0 12px 32px -18px var(--accent);
+}
+.first-step .label{
+  font-family:var(--font-mono);font-size:.65rem;letter-spacing:.14em;
+  text-transform:uppercase;color:var(--accent);display:block;margin-bottom:.6rem;
+}
+
+/* ── appendix ── */
+details{
+  border:1px solid var(--rule);border-radius:var(--radius);
+  padding:.9rem 1.15rem;margin:0 0 .65rem;background:var(--bg-panel);
+}
+details[open]{border-color:var(--rule-bright)}
+summary{
+  cursor:pointer;font-weight:600;font-size:.93rem;
+  list-style:none;display:flex;justify-content:space-between;
+  align-items:center;gap:1rem;
+}
+summary::-webkit-details-marker{display:none}
+summary::after{
+  content:"+";color:var(--ink-faint);font-family:var(--font-mono);
+  font-size:1rem;line-height:1;
+}
+details[open] summary::after{content:"−"}
+details[open] summary{margin-bottom:.85rem;color:var(--accent)}
+details p{font-size:.92rem;color:var(--ink-soft)}
+
+footer{
+  margin-top:3.5rem;padding-top:1.3rem;border-top:1px solid var(--rule);
+  font-size:.8rem;color:var(--ink-faint);line-height:1.6;
+}
+footer a{color:var(--ink-soft);text-decoration-color:var(--rule-bright)}
+footer strong{color:var(--ink-soft)}
+
+@media print{
+  body{padding:0;font-size:10.5pt;background:#fff;color:#000;background-image:none}
+  main{padding-top:0}
+  .first-step{box-shadow:none}
+  details{break-inside:avoid}
+  details:not([open]) > *:not(summary){display:revert}
+}
+</style>
+</head>
+<body>
+<main>
+
+  <p class="eyebrow">LLM Council <span class="sep">/</span> {{DATE}}</p>
+  <h1>{{TOPIC}}</h1>
+
+  <p class="question">
+    <span class="label">The question put to the council</span>
+    {{FRAMED_QUESTION}}
+  </p>
+
+  <section id="agrees">
+    <h2>Where the Council Agrees</h2>
+    {{AGREEMENTS}}
+  </section>
+
+  <section id="clashes">
+    <h2>Where the Council Clashes</h2>
+    {{CLASHES}}
+  </section>
+
+  <section id="blindspots">
+    <h2>Blind Spots the Council Caught</h2>
+    {{BLIND_SPOTS}}
+  </section>
+
+  <section id="ranking">
+    <h2>Council Ranking</h2>
+    <div class="table-wrap">
+      <table>
+        <thead>
+          <tr><th>Advisor</th><th>Avg rank</th><th>Rankings counted</th></tr>
+        </thead>
+        <tbody>
+          {{RANKING_ROWS}}
+        </tbody>
+      </table>
+    </div>
+    <p class="note">{{RANKING_NOTE}}</p>
+  </section>
+
+  <section id="recommendation">
+    <h2>The Recommendation</h2>
+    <div class="recommendation">{{RECOMMENDATION}}</div>
+  </section>
+
+  <section id="first-step">
+    <h2>The One Thing to Do First</h2>
+    <div class="first-step">
+      <span class="label">Start here</span>
+      {{FIRST_STEP}}
+    </div>
+  </section>
+
+  <section id="appendix">
+    <h2>Appendix — the five advisors, in full</h2>
+    {{ADVISOR_DETAILS}}
+    <!-- one <details> per advisor:
+    <details><summary>The Contrarian</summary><p>…</p></details>
+    -->
+  </section>
+
+  <footer>
+    Generated by the <strong>LLM Council</strong> skill for Claude Code · methodology adapted from
+    <a href="https://github.com/karpathy/llm-council">Karpathy's LLM Council</a>.<br>
+    The five advisors are thinking lenses on a single model, not independent experts —
+    agreement between them is a strong hypothesis, not proof.<br>
+    Full transcript: <code>{{TRANSCRIPT_PATH}}</code>
+  </footer>
+
+</main>
+</body>
+</html>
