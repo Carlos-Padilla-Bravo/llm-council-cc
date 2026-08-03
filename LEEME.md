@@ -140,7 +140,9 @@ Cualquiera de estas frases la activa:
 
 También se activa con un dilema real planteado con naturalidad: "¿hago X o Y?", "estoy entre dos opciones", "cuál conviene". No se activa con búsquedas de datos, tareas de redacción, ni un "¿debería...?" casual sin nada en juego.
 
-El idioma de la salida sigue al tuyo: si preguntas en español, el veredicto sale en español. La skill en sí está escrita en inglés.
+El idioma de la salida sigue al tuyo: la fase 0 lee el idioma —y la variedad regional— de tu pregunta y lo inyecta en los diez prompts, así que si preguntas en español el veredicto sale en español. La skill en sí está escrita en inglés.
+
+El mecanismo no lleva nada específico del español y debería funcionar con cualquier idioma que el modelo maneje bien, pero conviene saber que **solo se ha ejercitado en español** hasta ahora. Si la corres en otro idioma y los asesores se desvían, es una laguna de pruebas y no de diseño: repórtalo en una issue.
 
 Salida resumida:
 

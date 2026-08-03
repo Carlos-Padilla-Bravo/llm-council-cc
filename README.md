@@ -6,7 +6,7 @@ Turn one hard decision into five independent analyses, a blind peer review with 
 
 ![Council dashboard: the verdict, convergence counts, and the ranking of five advisors](./docs/council-dashboard.png)
 
-*Real output, unedited — the optional HTML report. This session was run in Spanish; the verdict comes back in whatever language you ask in. It also runs in the chat as plain markdown.*
+*Real output, unedited — the optional HTML report. This session was run in Spanish: Phase 0 detects the language of your question and passes it to every advisor, so the verdict comes back in it. The verdict also runs in the chat as plain markdown.*
 
 Adapted from Andrej Karpathy's [LLM Council](https://github.com/karpathy/llm-council). Karpathy's version dispatches a query to several different models, has them rank each other anonymously, and lets a chairman compile the answer. This is that pipeline rebuilt to run entirely inside Claude Code, with one honest substitution — documented below.
 
@@ -183,7 +183,9 @@ The verdict is delivered in the chat. A full transcript is always written to `co
 
 The council reads that folder on later runs, so it won't re-argue ground you already settled.
 
-Output language mirrors yours — ask in Spanish, get the verdict in Spanish. The skill itself is written in English.
+Output language mirrors yours: Phase 0 reads the language — and the regional variety — of your question and passes it into all ten agent prompts, so ask in Spanish and the verdict comes back in Spanish. The skill itself is written in English.
+
+The mechanism carries nothing Spanish-specific and should hold for any language the model handles well, but be aware it has **only been exercised in Spanish** so far. If you run it in another language and the advisors drift, that is a gap in testing rather than in design — say so in an issue.
 
 ### HTML report (optional)
 
