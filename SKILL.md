@@ -141,11 +141,21 @@ Two notes on why the reviewer prompt is shaped this way:
 
 **The ranking excludes the reviewer's own response.** Karpathy's models rank every response including their own — his README says otherwise, but `stage2_collect_rankings` sends one prompt containing all Stage 1 answers to every council model — and that is safe there because model identity is effectively hidden. Here it is not: a lens recognizes its own text instantly, and self-favoring has been observed in practice even with an explicit instruction against it. Since the reviewer can identify its own answer either way, excluding it structurally is more robust than prohibiting a bias the model will act on anyway. Every advisor still receives four rankings from four other lenses, on four-item lists — symmetric, so the averages stay comparable.
 
+Be aware this instruction is followed, not guaranteed: in measured runs roughly one reviewer in five still slips its own answer into the ranking, usually at the top. That is why Phase 3 checks compliance before aggregating instead of trusting the format.
+
 ## Phase 3: Chairman synthesis
 
 You, the main agent, are the Chairman. You already hold the conversation context, the framed question, all five responses de-anonymized, and all five reviews. Do this inline — do not spawn an eleventh agent.
 
-1. **Aggregate the rankings.** Parse each `FINAL RANKING:` block, map letters back to advisors, and compute each advisor's **average position**. Sort ascending, lower is better. Each advisor should appear in exactly four of the five rankings — never its own. If a reviewer ranked five instead of four, it included itself: drop the entry for its own response and close the gap in the remaining positions rather than discarding the whole ranking. If a block is missing or unparseable, discard that one ranking and note how many were counted.
+1. **Aggregate the rankings.** Parse each `FINAL RANKING:` block, map letters back to advisors, and compute each advisor's **average position**. Sort ascending, lower is better.
+
+   **Check compliance first — one reviewer in five gets this wrong.** Each ranking must list exactly four labels and must not contain the reviewer's own. Two failure modes, handled differently:
+   - *Ranked five.* It simply included itself. Drop its own entry, close the gap, keep the rest.
+   - *Ranked four but the wrong four* — its own is present and someone else's is missing. Discard that ranking entirely: it both self-promotes and denies a data point to whoever it dropped. Say so in the verdict.
+
+   Then note how many rankings were counted and why. When a ranking is discarded, the discarded reviewer's own lens ends up with more data points than the others; state that asymmetry rather than hiding it. If the result is close, recompute with the discarded ranking repaired and say whether the order changes — a conclusion that survives both treatments is worth more than one that depends on the referee's decision.
+
+   Keep the reviewer's qualitative sections regardless. A non-compliant ranking does not invalidate its analysis.
 
 2. **Write the verdict** in five sections, in the user's language:
 

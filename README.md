@@ -1,5 +1,7 @@
 # LLM Council — a Claude Code skill
 
+*[Versión en español](./LEEME.md)*
+
 Turn one hard decision into five independent analyses, a blind peer review with a forced ranking, and a single verdict that tells you where the advisors agree, where they clash, and what to do first.
 
 Adapted from Andrej Karpathy's [LLM Council](https://github.com/karpathy/llm-council). Karpathy's version dispatches a query to several different models, has them rank each other anonymously, and lets a chairman compile the answer. This is that pipeline rebuilt to run entirely inside Claude Code, with one honest substitution — documented below.
@@ -68,7 +70,9 @@ That choice has a consequence: an angle is self-identifying. The Contrarian is r
 
 **3. A reviewer cannot rank itself.** In the original, every model ranks every response, its own included. Worth being exact here, because his README and his code disagree: the README says each LLM "is given the responses of the *other* LLMs", but `stage2_collect_rankings` in `backend/council.py` builds one prompt containing all of Stage 1 and sends that same prompt to every council model. So each one does see and rank its own answer. It is harmless there — a model has no way to pick its own out of four strangers.
 
-Ours can pick it out instantly. In testing, a reviewer placed its own answer first despite an explicit instruction not to favor its own angle; it read the rule, and the pull of agreeing with itself won. Restating the prohibition more forcefully is the fix that feels right and changes nothing — the model already understood. So reviewers here rank only the four responses they did not write. Each advisor still collects four rankings from four other lenses, on four-item lists, which keeps the averages symmetric and comparable.
+Ours can pick it out instantly. In testing, a reviewer placed its own answer first despite an explicit instruction not to favor its own angle; it read the rule, and the pull of agreeing with itself won. Restating the prohibition more forcefully is the fix that feels right and changes nothing — the model already understood. So reviewers here rank only the four responses they did not write.
+
+**Honest about that fix: it works, but not every time.** In measured runs roughly one reviewer in five still slips its own answer into the ranking, usually at the top. Phase 3 therefore checks compliance before aggregating, discards a non-compliant ranking, states how many were counted, and — when the result is close — recomputes with the discarded ranking repaired to confirm the order does not depend on that call.
 
 Each of those is a departure from the letter of the method in order to preserve what the method depends on. They are documented rather than hidden because a reader deserves to know which decisions are Karpathy's and which are this fork's.
 
