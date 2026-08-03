@@ -189,7 +189,15 @@ Trigger it only when the user asks: "dame el informe en HTML", "make an HTML rep
 1. If the verdict is not already in context, `Read` the relevant file in `council-transcripts/`. If several match, ask which one.
 2. `Read` `report-template.html` from this skill folder. Clone its structure and CSS; do not rebuild the styling from scratch.
 3. **Branding.** The bundled template is deliberately brand-neutral, and all of its colors, fonts, and spacing live in CSS custom properties at the top of the file. Before filling it in, check whether this installation has a brand-identity skill (a skill whose purpose is defining a person's or company's visual identity). If one exists, invoke it and override only those custom properties with its tokens. If none exists, use the template exactly as shipped. Never hardcode one person's brand into the template file itself — that file is shared by everyone who installs this skill.
-4. Fill every section from the transcript: the framed question, the five sections of the verdict, the ranking table, and a collapsed appendix holding the five full advisor responses. Keep the advisor names.
+4. Fill every placeholder from the transcript. The template is a dashboard, not a document, so three parts need care:
+
+   **The KPI row.** Four tiles: the verdict in two or three words, the strongest convergence (how many of the five advisors independently reached the same point), how many rankings were counted, and how many blind spots two or more reviewers flagged. Every one is a real count from this session. If a number does not exist, do not invent a metric to fill the slot — cut the tile.
+
+   **The ranking chart.** Dots on a 1–4 track, positioned `left: (rank − 1) / 3 × 100%`. The best advisor's row gets `class="row lead"`. **Never convert this to bars.** Average rank is an inverted scale with no meaningful zero, so bar length would read backwards — longest bar, worst advisor. The value and the count are printed beside each dot, so the chart is also its own table.
+
+   **The convergence pips.** `<span class="pips">` with one `<i class="on">` per converging lens out of five. Use them where a claim rests on a count, not decoratively.
+
+   Then the prose: agreements and clashes as side-by-side cards, blind spots with their pip counts, recommendation and first step, and a collapsed appendix holding the five full advisor responses under their real names.
 5. Write to `council-transcripts/{topic-slug}-{YYYY-MM-DD}.html`. Give the user the path and let them open it; do not launch a browser unless asked.
 
 The markdown transcript remains the source of truth. The HTML is a view of it, never a replacement — if the two disagree, the markdown is right.

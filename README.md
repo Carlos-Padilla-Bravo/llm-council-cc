@@ -4,14 +4,9 @@
 
 Turn one hard decision into five independent analyses, a blind peer review with a forced ranking, and a single verdict that tells you where the advisors agree, where they clash, and what to do first.
 
-```
-Where the Council Agrees ····· what several lenses reached on their own
-Where the Council Clashes ···· the disagreement, not smoothed over
-Blind Spots Caught ·········· what only surfaced in peer review
-Council Ranking ············· avg. rank per advisor, from blind review
-The Recommendation ·········· a real answer, not "it depends"
-The One Thing to Do First ··· one concrete step
-```
+![Council dashboard: the verdict, convergence counts, and the ranking of five advisors](./docs/council-dashboard.png)
+
+*Real output, unedited — the optional HTML report. The verdict also runs in the chat as plain markdown.*
 
 Adapted from Andrej Karpathy's [LLM Council](https://github.com/karpathy/llm-council). Karpathy's version dispatches a query to several different models, has them rank each other anonymously, and lets a chairman compile the answer. This is that pipeline rebuilt to run entirely inside Claude Code, with one honest substitution — documented below.
 
@@ -82,6 +77,10 @@ That choice has a consequence: an angle is self-identifying. The Contrarian is r
 Ours can pick it out instantly. In testing, a reviewer placed its own answer first despite an explicit instruction not to favor its own angle; it read the rule, and the pull of agreeing with itself won. Restating the prohibition more forcefully is the fix that feels right and changes nothing — the model already understood. So reviewers here rank only the four responses they did not write.
 
 **Honest about that fix: it works, but not every time.** In measured runs roughly one reviewer in five still slips its own answer into the ranking, usually at the top. Phase 3 therefore checks compliance before aggregating, discards a non-compliant ranking, states how many were counted, and — when the result is close — recomputes with the discarded ranking repaired to confirm the order does not depend on that call.
+
+![The ranking chart, showing one reviewer's ranking discarded and the recomputation that confirms the order](./docs/council-ranking.png)
+
+*What that looks like in practice. Three advisors show n=3 because one reviewer's ranking was thrown out; the note says so, and says the order survives recomputing without it. Rank is plotted as position on a 1–4 scale rather than bar length — average rank is an inverted scale with no meaningful zero, so a bar would read backwards.*
 
 Each of those is a departure from the letter of the method in order to preserve what the method depends on. They are documented rather than hidden because a reader deserves to know which decisions are Karpathy's and which are this fork's.
 
@@ -214,7 +213,7 @@ The template itself must stay neutral — it is shared by everyone who installs 
 ## Credits
 
 - **Method:** [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council). The three-stage structure, the anonymized peer review, the strict `FINAL RANKING:` format and the average-rank aggregation are his. That repository carried **no license** when this one was written (checked 2 August 2026), so nothing is claimed about its terms here — and nothing needed to be, because no code or text from it is reproduced. What is reused is the method, which the README and `backend/council.py` describe openly.
-- **Prior adaptation:** the idea of porting the council to a Claude skill with five thinking lenses is credited to [Ole Lehmann](https://x.com/olelehmann). It circulates in at least two near-identical distributions — [tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) and [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), whose `SKILL.md` files are 96% identical sentence-for-sentence — and neither carries a license. This repository shares **no text with either** — measured, zero identical sentences — and reworks the design: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors read project files, web search is opt-in, and the output is a chat verdict plus a transcript.
+- **Prior adaptation:** the idea of porting the council to a Claude skill with five thinking lenses is credited to [Ole Lehmann](https://x.com/itsolelehmann). It circulates in at least two near-identical distributions — [tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) and [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), whose `SKILL.md` files are 96% identical sentence-for-sentence — and neither carries a license. This repository shares **no text with either** — measured, zero identical sentences — and reworks the design: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors read project files, web search is opt-in, and the output is a chat verdict plus a transcript.
 - **This implementation:** [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
 
 The contents of this repository are MIT licensed. See [LICENSE](./LICENSE).

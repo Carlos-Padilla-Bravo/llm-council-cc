@@ -4,14 +4,9 @@
 
 Convierte una decisión difícil en cinco análisis independientes, una revisión a ciegas con ranking obligatorio, y un único veredicto que dice dónde coinciden los asesores, dónde chocan y qué hacer primero.
 
-```
-Dónde coincide el consejo ··· lo que varias lentes alcanzaron por su cuenta
-Dónde choca el consejo ······ el desacuerdo, sin suavizar
-Puntos ciegos cazados ······· lo que solo apareció en la revisión
-Ranking del consejo ········· rango promedio por asesor, de la revisión ciega
-La recomendación ············ una respuesta real, no "depende"
-Lo primero que hay que hacer · un solo paso concreto
-```
+![Dashboard del consejo: el veredicto, los recuentos de convergencia y el ranking de los cinco asesores](./docs/council-dashboard.png)
+
+*Salida real, sin retocar — el informe HTML opcional. El veredicto también se entrega en el chat como markdown.*
 
 Adaptada del [LLM Council de Andrej Karpathy](https://github.com/karpathy/llm-council). Su versión envía la consulta a varios modelos de distintos laboratorios, hace que se puntúen entre ellos de forma anónima, y deja que un presidente redacte la respuesta final. Esta es esa misma tubería reconstruida para funcionar dentro de Claude Code, con una sustitución que se explica más abajo sin adornos.
 
@@ -82,6 +77,10 @@ Esa decisión tiene una consecuencia: un ángulo se identifica solo. El Contrari
 Las nuestras la distinguen al instante. En pruebas, un revisor puso su propia respuesta en primer lugar pese a la instrucción explícita de no favorecer su propio ángulo; leyó la regla, y el tirón de darse la razón ganó. Repetir la prohibición con más énfasis es el arreglo que se siente bien y no cambia nada: el modelo ya la había entendido. Así que aquí cada revisor puntúa solo las cuatro respuestas que no escribió.
 
 **Honestidad sobre este último arreglo:** funciona, pero no siempre. En las corridas medidas, aproximadamente uno de cada cinco revisores sigue colando su propia respuesta, y casi siempre arriba. Por eso la fase 3 comprueba el cumplimiento antes de promediar, descarta el ranking que no cumple, declara cuántos se contaron y, si el resultado está apretado, recalcula con el ranking descartado corregido para verificar que el orden no dependa de esa decisión.
+
+![El gráfico de ranking, con un ranking descartado y el recálculo que confirma que el orden no cambia](./docs/council-ranking.png)
+
+*Cómo se ve eso en la práctica. Tres asesores aparecen con n=3 porque se descartó el ranking de un revisor; la nota lo dice, y dice que el orden sobrevive al recálculo sin él. El rango se dibuja como posición en una escala de 1 a 4, no como longitud de barra: el rango promedio es una escala invertida sin cero con sentido, así que una barra leería al revés.*
 
 Cada una de estas es una desviación de la letra del método para conservar aquello de lo que el método depende. Están documentadas en vez de escondidas porque quien lee merece saber qué decisiones son de Karpathy y cuáles de esta bifurcación.
 
@@ -213,7 +212,7 @@ La plantilla debe seguir siendo neutra: la comparten todos los que instalen la s
 ## Créditos
 
 - **Método:** [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council). La estructura de tres etapas, la revisión anónima entre pares, el formato estricto `FINAL RANKING:` y el promedio de rangos son suyos. Ese repositorio **no tenía licencia** cuando se escribió este (verificado el 2 de agosto de 2026), así que aquí no se afirma nada sobre sus términos — y no hizo falta, porque no se reproduce nada de su código ni de su texto. Lo que se reutiliza es el método, que su README y su `backend/council.py` describen abiertamente.
-- **Adaptación previa:** la idea de llevar el consejo a una skill de Claude con cinco lentes de pensamiento se atribuye a [Ole Lehmann](https://x.com/olelehmann). Circula en al menos dos distribuciones casi idénticas —[tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) y [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), cuyos `SKILL.md` coinciden en un 96% frase por frase— y ninguna de las dos tiene licencia. Este repositorio **no comparte texto con ninguna** —medido: cero frases idénticas— y rehace el diseño: los revisores conservan su lente, se restaura el ranking de Karpathy, el presidente es el agente principal, los asesores leen archivos del proyecto, la búsqueda web es opcional y la salida es un veredicto en el chat más una transcripción.
+- **Adaptación previa:** la idea de llevar el consejo a una skill de Claude con cinco lentes de pensamiento se atribuye a [Ole Lehmann](https://x.com/itsolelehmann). Circula en al menos dos distribuciones casi idénticas —[tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) y [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), cuyos `SKILL.md` coinciden en un 96% frase por frase— y ninguna de las dos tiene licencia. Este repositorio **no comparte texto con ninguna** —medido: cero frases idénticas— y rehace el diseño: los revisores conservan su lente, se restaura el ranking de Karpathy, el presidente es el agente principal, los asesores leen archivos del proyecto, la búsqueda web es opcional y la salida es un veredicto en el chat más una transcripción.
 - **Esta implementación:** [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
 
 El contenido de este repositorio se publica bajo licencia MIT. Ver [LICENSE](./LICENSE).
