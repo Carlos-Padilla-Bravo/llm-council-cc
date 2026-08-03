@@ -4,9 +4,14 @@
 
 Convierte una decisión difícil en cinco análisis independientes, una revisión a ciegas con ranking obligatorio, y un único veredicto que dice dónde coinciden los asesores, dónde chocan y qué hacer primero.
 
-![Un veredicto del consejo: la pregunta enmarcada y los puntos a los que varias lentes llegaron por su cuenta](./docs/council-report.png)
-
-*Salida real, sin retocar. El veredicto se entrega en el chat como markdown; esto es el informe HTML opcional.*
+```
+Dónde coincide el consejo ··· lo que varias lentes alcanzaron por su cuenta
+Dónde choca el consejo ······ el desacuerdo, sin suavizar
+Puntos ciegos cazados ······· lo que solo apareció en la revisión
+Ranking del consejo ········· rango promedio por asesor, de la revisión ciega
+La recomendación ············ una respuesta real, no "depende"
+Lo primero que hay que hacer · un solo paso concreto
+```
 
 Adaptada del [LLM Council de Andrej Karpathy](https://github.com/karpathy/llm-council). Su versión envía la consulta a varios modelos de distintos laboratorios, hace que se puntúen entre ellos de forma anónima, y deja que un presidente redacte la respuesta final. Esta es esa misma tubería reconstruida para funcionar dentro de Claude Code, con una sustitución que se explica más abajo sin adornos.
 
@@ -77,10 +82,6 @@ Esa decisión tiene una consecuencia: un ángulo se identifica solo. El Contrari
 Las nuestras la distinguen al instante. En pruebas, un revisor puso su propia respuesta en primer lugar pese a la instrucción explícita de no favorecer su propio ángulo; leyó la regla, y el tirón de darse la razón ganó. Repetir la prohibición con más énfasis es el arreglo que se siente bien y no cambia nada: el modelo ya la había entendido. Así que aquí cada revisor puntúa solo las cuatro respuestas que no escribió.
 
 **Honestidad sobre este último arreglo:** funciona, pero no siempre. En las corridas medidas, aproximadamente uno de cada cinco revisores sigue colando su propia respuesta, y casi siempre arriba. Por eso la fase 3 comprueba el cumplimiento antes de promediar, descarta el ranking que no cumple, declara cuántos se contaron y, si el resultado está apretado, recalcula con el ranking descartado corregido para verificar que el orden no dependa de esa decisión.
-
-![La tabla de ranking del consejo, con una nota que declara que un revisor puntuó primera su propia respuesta](./docs/council-ranking.png)
-
-*De la sesión que produjo el hallazgo, corrida antes de que existiera la regla de autoexclusión — por eso cada asesor aparece con cinco rankings contados y no cuatro. La nota bajo la tabla es la skill informando de su propio sesgo, y la escribe el presidente en cada corrida en que ocurre.*
 
 Cada una de estas es una desviación de la letra del método para conservar aquello de lo que el método depende. Están documentadas en vez de escondidas porque quien lee merece saber qué decisiones son de Karpathy y cuáles de esta bifurcación.
 
