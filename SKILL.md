@@ -10,7 +10,7 @@ Ask one AI, get one answer. It might be great, it might be mid, and you have no 
 
 The council fixes that. Five advisors analyze the question independently from fundamentally different angles, then peer-review each other's work blind and rank it, then a chairman synthesizes where they agree, where they clash, and what you should actually do.
 
-Adapted from [Andrej Karpathy's LLM Council](https://github.com/karpathy/llm-council). He dispatches a query to several different models, has them rank each other anonymously, and a chairman compiles the final answer. This runs the same three stages inside Claude Code, substituting **thinking lenses** for **different models** as the source of diversity. See "Fidelity notes" at the end for what that substitution costs.
+Adapted from [Andrej Karpathy's LLM Council](https://github.com/karpathy/llm-council). He dispatches a query to several different models from different labs, has them rank each other anonymously, and a chairman compiles the final answer. This runs the same three stages inside Claude Code, substituting **thinking lenses** for **different models** as the source of diversity — a deliberate choice, not a limitation. See "Fidelity notes" at the end for why, and for what the substitution costs.
 
 Run all four phases. Do not shortcut one.
 
@@ -208,7 +208,7 @@ What this keeps from Karpathy: three stages, full parallelism within each stage,
 
 What this changes, deliberately:
 
-- **Thinking lenses instead of different models.** Karpathy's diversity comes from gpt-5.1 / gemini-3-pro / claude-sonnet-4.5 / grok-4 answering the same prompt. Claude Code has one model per session, so diversity is manufactured through assigned angles instead. Cheaper and available offline of other providers; weaker, because the advisors share priors and blind spots that four different labs would not.
+- **Thinking lenses instead of different models.** Karpathy's diversity comes from gpt-5.1 / gemini-3-pro / claude-sonnet-4.5 / grok-4 — four labs — answering the same prompt. The `Agent` tool does accept a per-subagent `model`, so a literal port is possible; it is deliberately not done here. Every model in the harness comes from one lab, so mixing them buys tier variation rather than the cross-lab independence the original depends on, and mixing tiers corrupts the ranking: an advisor on a smaller model finishing last reports model capability, not the worth of its angle. Diversity is manufactured through assigned angles on equal footing instead. Cheaper and provider-independent; weaker than the original, because the advisors share priors and blind spots that four different labs would not.
 - **Ranking criterion swapped** from "best answer" to "most changes the decision," because deliberately one-sided advisors cannot be compared on answer quality.
 - **Reviewers do not rank themselves.** Karpathy's models rank all N responses, their own included, and that is sound because the anonymization there actually holds. Here a lens recognizes its own text, and self-favoring shows up in practice despite an explicit instruction against it. Excluding the self-entry gives back the blindness the original gets for free; it is a departure from the letter of the method in service of the property the method depends on.
 - **Prescribed verdict structure**, where Karpathy's chairman synthesizes freely. The five sections exist because this skill targets decisions, not general Q&A.

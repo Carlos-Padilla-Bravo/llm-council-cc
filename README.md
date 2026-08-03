@@ -46,7 +46,7 @@ Four advisors read your actual project files (`Read`, `Glob`, `Grep`) so the adv
 
 | Stage | Karpathy's original | This skill |
 |---|---|---|
-| Diversity | 4 different models (gpt-5.1, gemini-3-pro, claude-sonnet-4.5, grok-4) answering an identical prompt | 5 thinking lenses on one model, since Claude Code runs a single model per session |
+| Diversity | 4 different models from 4 different labs (gpt-5.1, gemini-3-pro, claude-sonnet-4.5, grok-4) answering an identical prompt | 5 thinking lenses, all on the same model. Claude Code *can* assign a different model per subagent; using one is a deliberate choice, explained below |
 | Stage 1 | Same query to every model, no persona | Framed question + workspace context to every advisor, each with an assigned angle and tool access |
 | Stage 2 | Anonymized `Response A–E`, per-response evaluation, then a strict `FINAL RANKING:` block, parsed and averaged | Same format verbatim, including average-rank aggregation. Two changes: reviewers keep their lens so five reviews don't collapse into one, and they rank only the four responses they did not write |
 | Ranking criterion | Best answer (accuracy and insight) | **Most changes the decision.** Deliberately one-sided advisors can't be compared on answer quality |
@@ -58,7 +58,9 @@ Four advisors read your actual project files (`Read`, `Glob`, `Grep`) so the adv
 
 Karpathy's council rests on one property that does all the quiet work: **the judges are genuinely blind.** Four different models from four different labs answer the same prompt, and when they rank each other as `Response A–E`, none of them can tell which answer is its own or who wrote the rest. Every other rule in his design is safe *because* that holds.
 
-Port the method to a single-model harness and that property disappears. The diversity has to be manufactured through assigned angles, and an angle is self-identifying — the Contrarian is recognizable from its first sentence, to a reader and to itself. Copy his rules unchanged onto that foundation and you inherit the shape of the method without the thing that made it work. Three places where that matters, and what this skill does instead:
+Claude Code can assign a different model to each subagent, so a literal port is technically possible. It is not what this skill does, for two reasons. Every model available in the harness comes from one lab, so mixing them buys tier variation, not the cross-lab independence Karpathy's design is built on — the shared priors stay shared. And mixing tiers actively corrupts the ranking: a Haiku advisor placed last tells you about model capability, not about whether its angle was worth hearing. So the diversity here is manufactured through assigned angles, on equal footing.
+
+That choice has a consequence: an angle is self-identifying. The Contrarian is recognizable from its first sentence, to a reader and to itself. Copy Karpathy's rules unchanged onto that foundation and you inherit the shape of the method without the thing that made it work. Three places where that matters, and what this skill does instead:
 
 **1. Five reviewers must not share one prompt.** In the original, five reviews differ because five different models wrote them. Give five instances of one model the same reviewer prompt and you get five near-identical reviews — ten agents spent to buy one opinion. Here each reviewer keeps its own lens while judging, so the reviews diverge for the same reason the answers did.
 
@@ -68,7 +70,7 @@ Port the method to a single-model harness and that property disappears. The dive
 
 Each of those is a departure from the letter of the method in order to preserve what the method depends on. They are documented rather than hidden because a reader deserves to know which decisions are Karpathy's and which are this fork's.
 
-**What the substitution still costs:** five instances of one model share priors and blind spots that four independent labs would not. Convergence across the lenses is a strong hypothesis, never independent proof — and no amount of prompt engineering fixes that. If you need genuinely independent judgment, run the original against four APIs.
+**What the substitution still costs:** five instances of one model share priors and blind spots that four independent labs would not. Convergence across the lenses is a strong hypothesis, never independent proof — and no amount of prompt engineering fixes that, nor would swapping in a second model from the same lab. If you need genuinely independent judgment, run the original against four APIs.
 
 ---
 
