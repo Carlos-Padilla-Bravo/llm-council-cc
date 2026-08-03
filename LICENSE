@@ -2,8 +2,11 @@ MIT License
 
 Copyright (c) 2026 Carlos Padilla Bravo
 
-Methodology adapted from llm-council by Andrej Karpathy (MIT License),
-https://github.com/karpathy/llm-council
+This is an independent implementation of the LLM Council method described by
+Andrej Karpathy at https://github.com/karpathy/llm-council. No code or text
+from that repository is reproduced here. As of 2 August 2026 that repository
+carries no license file, so nothing about its licensing is asserted or implied
+by this notice; the license below covers only the work in this repository.
 
 Permission is hereby granted, free of charge, to any person obtaining a copy
 of this software and associated documentation files (the "Software"), to deal

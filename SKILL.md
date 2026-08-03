@@ -80,7 +80,7 @@ This is the step that makes the council more than asking five times. It is the c
 
 **Anonymize first.** Label the five responses `Response A` through `Response E` using a **randomized** mapping — not advisor order, or position leaks identity. Hold the letter→advisor map yourself; it does not go into any reviewer prompt.
 
-**Then spawn five `general-purpose` agents in a single message.** Each reviewer **keeps its own lens** — the Contrarian reviews as the Contrarian. This matters: five identical reviewer prompts on the same model produce five near-identical reviews, which burns five agents to buy one opinion. In Karpathy's version the five reviewers differ because they are five different models; here they differ because they judge from their own angle.
+**Then spawn five `general-purpose` agents in a single message.** Each reviewer **keeps its own lens** — the Contrarian reviews as the Contrarian. This matters: five identical reviewer prompts on the same model produce five near-identical reviews, which burns five agents to buy one opinion. In Karpathy's version the reviewers share one identical prompt and still differ, because there are four of them and they are four different models; here they must differ by angle instead.
 
 Reviewer prompt, substituting `{ADVISOR}`, `{ADVISOR_DESCRIPTION}` (one line, from Phase 1), `{FRAMED_QUESTION}`, the five labeled responses, and `{LANGUAGE}`:
 
@@ -139,7 +139,7 @@ Two notes on why the reviewer prompt is shaped this way:
 
 **Section 1 evaluates all five, including the reviewer's own.** In Karpathy's original the per-response evaluation is required *before* the ranking. It is the reasoning scaffold that makes the ranking mean something. Drop it and you get a reflex ranking that is worse than no ranking. It must cover all five, or a reviewer will report its own contribution as something "the council missed."
 
-**The ranking excludes the reviewer's own response.** Karpathy's models rank every response including their own, and that is safe there because model identity is genuinely hidden. Here it is not: a lens recognizes its own text instantly, and self-favoring has been observed in practice even with an explicit instruction against it. Since the reviewer can identify its own answer either way, excluding it structurally is more robust than prohibiting a bias the model will act on anyway. Every advisor still receives four rankings from four other lenses, on four-item lists — symmetric, so the averages stay comparable.
+**The ranking excludes the reviewer's own response.** Karpathy's models rank every response including their own — his README says otherwise, but `stage2_collect_rankings` sends one prompt containing all Stage 1 answers to every council model — and that is safe there because model identity is effectively hidden. Here it is not: a lens recognizes its own text instantly, and self-favoring has been observed in practice even with an explicit instruction against it. Since the reviewer can identify its own answer either way, excluding it structurally is more robust than prohibiting a bias the model will act on anyway. Every advisor still receives four rankings from four other lenses, on four-item lists — symmetric, so the averages stay comparable.
 
 ## Phase 3: Chairman synthesis
 
@@ -194,7 +194,7 @@ The markdown transcript remains the source of truth. The HTML is a view of it, n
 
 ## Notes & guardrails
 
-- **Cost.** ~10 agents per session. That is the design. Do not fan out wider than five advisors and five reviewers. Web search is the single most expensive component — roughly two thirds of a run when enabled — which is why it is opt-in. The optional HTML report is cheap by comparison (one template read, one write) but still stays off by default, because most verdicts get read once and acted on.
+- **Cost.** ~10 agents per session. That is the design. Do not fan out wider than five advisors and five reviewers. Web search is the single most expensive component when enabled, by a wide margin, which is why it is opt-in. (In one measured run with search off, the five advisors accounted for roughly 23-25k tokens each; searching multiplies that, though by how much has not been measured.) The optional HTML report is cheap by comparison (one template read, one write) but still stays off by default, because most verdicts get read once and acted on.
 - **Always one message per wave.** Five advisors in one message, then five reviewers in one message. Sequential spawning contaminates and slows.
 - **Anonymization here is partial.** With fixed lenses, the Contrarian is recognizable from the first sentence — unlike Karpathy's setup, where model identity is genuinely hidden. That is why the ranking criterion is decision-usefulness rather than quality, why reviewers do not rank themselves, and why they are told not to guess at the others' authorship. Treat the ranking as a rough signal, not a scoreboard.
 - **The panel is author-built.** Five lenses agreeing is a strong hypothesis, not independent proof. Five instances of one model share the same underlying priors. Never present convergence as consensus of the field.

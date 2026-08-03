@@ -48,25 +48,27 @@ Four advisors read your actual project files (`Read`, `Glob`, `Grep`) so the adv
 |---|---|---|
 | Diversity | 4 different models from 4 different labs (gpt-5.1, gemini-3-pro, claude-sonnet-4.5, grok-4) answering an identical prompt | 5 thinking lenses, all on the same model. Claude Code *can* assign a different model per subagent; using one is a deliberate choice, explained below |
 | Stage 1 | Same query to every model, no persona | Framed question + workspace context to every advisor, each with an assigned angle and tool access |
-| Stage 2 | Anonymized `Response A–E`, per-response evaluation, then a strict `FINAL RANKING:` block, parsed and averaged | Same format verbatim, including average-rank aggregation. Two changes: reviewers keep their lens so five reviews don't collapse into one, and they rank only the four responses they did not write |
-| Ranking criterion | Best answer (accuracy and insight) | **Most changes the decision.** Deliberately one-sided advisors can't be compared on answer quality |
+| Stage 2 | Responses anonymized as `Response A`, `B`, `C`… (four labels, one per model), per-response evaluation, then a strict `FINAL RANKING:` block, parsed and averaged | Same format verbatim, including average-rank aggregation, over five labels. Two changes: reviewers keep their lens so five reviews don't collapse into one, and they rank only the four responses they did not write |
+| Ranking criterion | "Accuracy and insight", per his README. His actual Stage 2 prompt states no criterion — it asks what each response does well and poorly, then demands the ranking | **Most changes the decision.** Deliberately one-sided advisors can't be compared on answer quality |
 | Stage 3 | Chairman model synthesizes freely | Main agent synthesizes into five fixed sections aimed at a decision, and may side with the dissenter over the majority |
 | Context | Query only | Phase 0 reads `CLAUDE.md`, `memory/`, referenced files, past transcripts. No equivalent in the original |
 | Output | Web UI with per-stage tabs | Verdict in chat + a full markdown transcript on disk, plus an HTML report on request |
 
 ### Why the differences exist
 
-Karpathy's council rests on one property that does all the quiet work: **the judges are genuinely blind.** Four different models from four different labs answer the same prompt, and when they rank each other as `Response A–E`, none of them can tell which answer is its own or who wrote the rest. Every other rule in his design is safe *because* that holds.
+Karpathy's council rests on one property that does all the quiet work: **the judges are effectively blind.** Four models from four different labs answer the same prompt, and when they rank each other as `Response A` through `D`, none can reliably tell which answer is its own or who wrote the rest — different training, different house style, nothing to recognize. Every other rule in his design is safe *because* that holds. (Strictly, this is the design's premise rather than a measured fact; he does not test it, and neither has this repository.)
 
 Claude Code can assign a different model to each subagent, so a literal port is technically possible. It is not what this skill does, for two reasons. Every model available in the harness comes from one lab, so mixing them buys tier variation, not the cross-lab independence Karpathy's design is built on — the shared priors stay shared. And mixing tiers actively corrupts the ranking: a Haiku advisor placed last tells you about model capability, not about whether its angle was worth hearing. So the diversity here is manufactured through assigned angles, on equal footing.
 
 That choice has a consequence: an angle is self-identifying. The Contrarian is recognizable from its first sentence, to a reader and to itself. Copy Karpathy's rules unchanged onto that foundation and you inherit the shape of the method without the thing that made it work. Three places where that matters, and what this skill does instead:
 
-**1. Five reviewers must not share one prompt.** In the original, five reviews differ because five different models wrote them. Give five instances of one model the same reviewer prompt and you get five near-identical reviews — ten agents spent to buy one opinion. Here each reviewer keeps its own lens while judging, so the reviews diverge for the same reason the answers did.
+**1. Reviewers must not share one prompt.** In the original, the four reviews differ because four different models wrote them — the prompt is identical for all of them, and that is fine. Give five instances of *one* model that same identical prompt and you get five near-identical reviews: five agents spent to buy one opinion. Here each reviewer keeps its own lens while judging, so the reviews diverge for the same reason the answers did.
 
 **2. "Best answer" is not a rankable question here.** Karpathy's models each give their honest best attempt, so ranking them on accuracy and insight is coherent. These advisors are instructed to be one-sided; asking which is "best" compares a deliberate pessimist to a deliberate optimist. The criterion becomes **which response would most change the decision of a smart person facing this problem** — a question that stays meaningful when the inputs are biased by design.
 
-**3. A reviewer cannot rank itself.** His models rank all N responses including their own, harmlessly, because they cannot recognize it. Ours can. In testing, a reviewer placed its own answer first despite an explicit instruction not to favor its own angle — it read the rule, and the pull of agreeing with itself won. Restating the prohibition more forcefully is the fix that feels right and changes nothing; the model already understood. So reviewers rank only the four responses they did not write. Each advisor still collects four rankings from four other lenses, on four-item lists, which keeps the averages symmetric and comparable.
+**3. A reviewer cannot rank itself.** In the original, every model ranks every response, its own included. Worth being exact here, because his README and his code disagree: the README says each LLM "is given the responses of the *other* LLMs", but `stage2_collect_rankings` in `backend/council.py` builds one prompt containing all of Stage 1 and sends that same prompt to every council model. So each one does see and rank its own answer. It is harmless there — a model has no way to pick its own out of four strangers.
+
+Ours can pick it out instantly. In testing, a reviewer placed its own answer first despite an explicit instruction not to favor its own angle; it read the rule, and the pull of agreeing with itself won. Restating the prohibition more forcefully is the fix that feels right and changes nothing — the model already understood. So reviewers here rank only the four responses they did not write. Each advisor still collects four rankings from four other lenses, on four-item lists, which keeps the averages symmetric and comparable.
 
 Each of those is a departure from the letter of the method in order to preserve what the method depends on. They are documented rather than hidden because a reader deserves to know which decisions are Karpathy's and which are this fork's.
 
@@ -189,7 +191,7 @@ The template itself must stay neutral — it is shared by everyone who installs 
 ## Cost & caveats
 
 - **~10 agents per run.** Five advisors, five reviewers, chairman inline. That is the design, not an accident. Don't run it on questions that don't deserve it.
-- **Web search dominates the cost** when enabled — roughly two thirds of a run. That is why it is opt-in rather than default. The optional HTML report, by contrast, is one template read and one file write: a few percent.
+- **Web search dominates the cost** when enabled, which is why it is opt-in rather than default. For scale: in one measured run with search off, each advisor consumed roughly 23-25k tokens; searching multiplies that by an amount this repository has not measured. The optional HTML report, by contrast, is one template read and one file write.
 - **The panel is author-built.** These five lenses were chosen by a human. Agreement between them is a strong hypothesis, never a consensus of the field.
 - **Anonymization is partial.** Fixed lenses are self-identifying. Read the ranking as a rough signal, not a scoreboard.
 - **Average rank is not a vote.** A lens can finish last and still carry the observation that decides the question. The chairman is instructed to say so when it happens, and to side with a dissenter whose reasoning is strongest.
@@ -198,8 +200,8 @@ The template itself must stay neutral — it is shared by everyone who installs 
 
 ## Credits
 
-- Methodology: [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council) (MIT). The three-stage structure, anonymized peer review, `FINAL RANKING:` format, and rank aggregation are his.
-- The five-lens adaptation into a Claude skill originates with [Ole Lehmann](https://x.com/itsolelehmann). This version reworks it: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors get tools, and the output is chat plus transcript.
-- This version: [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
+- **Method:** [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council). The three-stage structure, the anonymized peer review, the strict `FINAL RANKING:` format and the average-rank aggregation are his. That repository carried **no license** when this one was written (checked 2 August 2026), so nothing is claimed about its terms here — and nothing needed to be, because no code or text from it is reproduced. What is reused is the method, which the README and `backend/council.py` describe openly.
+- **Prior adaptation:** the idea of porting the council to a Claude skill with five thinking lenses comes from a skill credited to [Ole Lehmann](https://x.com/itsolelehmann) and distributed at [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), also unlicensed. This repository shares **no text with it** — measured, zero identical sentences — and reworks the design: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors read project files, web search is opt-in, and the output is a chat verdict plus a transcript.
+- **This implementation:** [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
 
-MIT licensed. See [LICENSE](./LICENSE).
+The contents of this repository are MIT licensed. See [LICENSE](./LICENSE).
