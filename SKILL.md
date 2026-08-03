@@ -24,7 +24,11 @@ A brand-identity skill, if the installation happens to have one, is used to rest
 
 Do this inline, no agents.
 
-1. **Detect the user's language** from their message. Every advisor and reviewer prompt below ends with `Respond in {LANGUAGE}.`, and the final verdict is written in that language. The skill is in English; the output is not.
+1. **Detect the user's language — and their regional variety.** Every advisor and reviewer prompt below ends with `Respond in {LANGUAGE}.`, and the verdict is written in that language. The skill is in English; the output is not.
+
+   Variety matters as much as language, and subagents drift toward the dominant one unless told otherwise. Spanish is the common case: a Latin American reader gets *ustedes*, not *vosotros* — no `pedid`, `contad`, `tenéis`, `vuestro`. If the user's own variety is not obvious from their message, ask nothing and use the neutral register (`ustedes`, or impersonal phrasing), which reads correctly everywhere. Put the instruction in the prompts, e.g. `Respond in Latin American Spanish, using ustedes rather than vosotros.`
+
+   Check the finished verdict for drift before delivering. The advisors' output is where it creeps in, and it survives into the transcript and the HTML report unless caught.
 
 2. **Enrich with workspace context.** The user's question is usually the tip of the iceberg — their workspace holds the facts that separate specific advice from generic advice. Spend under 30 seconds. Use `Glob` then targeted `Read` on:
    - `CLAUDE.md` in the project root or workspace (business context, constraints, preferences)
