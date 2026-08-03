@@ -6,7 +6,7 @@ Turn one hard decision into five independent analyses, a blind peer review with 
 
 ![Council dashboard: the verdict, convergence counts, and the ranking of five advisors](./docs/council-dashboard.png)
 
-*Real output, unedited — the optional HTML report. The verdict also runs in the chat as plain markdown.*
+*Real output, unedited — the optional HTML report. This session was run in Spanish; the verdict comes back in whatever language you ask in. It also runs in the chat as plain markdown.*
 
 Adapted from Andrej Karpathy's [LLM Council](https://github.com/karpathy/llm-council). Karpathy's version dispatches a query to several different models, has them rank each other anonymously, and lets a chairman compile the answer. This is that pipeline rebuilt to run entirely inside Claude Code, with one honest substitution — documented below.
 
@@ -80,7 +80,7 @@ Ours can pick it out instantly. In testing, a reviewer placed its own answer fir
 
 ![The ranking chart, showing one reviewer's ranking discarded and the recomputation that confirms the order](./docs/council-ranking.png)
 
-*What that looks like in practice. Three advisors show n=3 because one reviewer's ranking was thrown out; the note says so, and says the order survives recomputing without it. Rank is plotted as position on a 1–4 scale rather than bar length — average rank is an inverted scale with no meaningful zero, so a bar would read backwards.*
+*What that looks like in practice — same Spanish session. Three advisors show `n=3` because one reviewer's ranking was thrown out; the note under the chart says so, and says the order survives recomputing without it. Rank is plotted as position on a 1–4 scale rather than bar length: average rank is an inverted scale with no meaningful zero, so a bar would read backwards — longest bar, worst advisor.*
 
 Each of those is a departure from the letter of the method in order to preserve what the method depends on. They are documented rather than hidden because a reader deserves to know which decisions are Karpathy's and which are this fork's.
 
