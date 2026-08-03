@@ -1,8 +1,17 @@
 # LLM Council — a Claude Code skill
 
-*[Versión en español](./LEEME.md)*
+### 🇪🇸 **[Léeme en español →](./LEEME.md)**
 
 Turn one hard decision into five independent analyses, a blind peer review with a forced ranking, and a single verdict that tells you where the advisors agree, where they clash, and what to do first.
+
+```
+Where the Council Agrees ····· what several lenses reached on their own
+Where the Council Clashes ···· the disagreement, not smoothed over
+Blind Spots Caught ·········· what only surfaced in peer review
+Council Ranking ············· avg. rank per advisor, from blind review
+The Recommendation ·········· a real answer, not "it depends"
+The One Thing to Do First ··· one concrete step
+```
 
 Adapted from Andrej Karpathy's [LLM Council](https://github.com/karpathy/llm-council). Karpathy's version dispatches a query to several different models, has them rank each other anonymously, and lets a chairman compile the answer. This is that pipeline rebuilt to run entirely inside Claude Code, with one honest substitution — documented below.
 
@@ -205,7 +214,7 @@ The template itself must stay neutral — it is shared by everyone who installs 
 ## Credits
 
 - **Method:** [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council). The three-stage structure, the anonymized peer review, the strict `FINAL RANKING:` format and the average-rank aggregation are his. That repository carried **no license** when this one was written (checked 2 August 2026), so nothing is claimed about its terms here — and nothing needed to be, because no code or text from it is reproduced. What is reused is the method, which the README and `backend/council.py` describe openly.
-- **Prior adaptation:** the idea of porting the council to a Claude skill with five thinking lenses comes from a skill credited to [Ole Lehmann](https://x.com/itsolelehmann) and distributed at [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), also unlicensed. This repository shares **no text with it** — measured, zero identical sentences — and reworks the design: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors read project files, web search is opt-in, and the output is a chat verdict plus a transcript.
+- **Prior adaptation:** the idea of porting the council to a Claude skill with five thinking lenses is credited to [Ole Lehmann](https://x.com/olelehmann). It circulates in at least two near-identical distributions — [tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) and [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), whose `SKILL.md` files are 96% identical sentence-for-sentence — and neither carries a license. This repository shares **no text with either** — measured, zero identical sentences — and reworks the design: reviewers keep their lens, Karpathy's ranking is restored, the chairman is the main agent, advisors read project files, web search is opt-in, and the output is a chat verdict plus a transcript.
 - **This implementation:** [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
 
 The contents of this repository are MIT licensed. See [LICENSE](./LICENSE).

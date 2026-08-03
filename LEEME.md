@@ -1,8 +1,17 @@
 # LLM Council — una skill para Claude Code
 
-*[English version](./README.md)*
+### 🇬🇧 **[Read this in English →](./README.md)**
 
 Convierte una decisión difícil en cinco análisis independientes, una revisión a ciegas con ranking obligatorio, y un único veredicto que dice dónde coinciden los asesores, dónde chocan y qué hacer primero.
+
+```
+Dónde coincide el consejo ··· lo que varias lentes alcanzaron por su cuenta
+Dónde choca el consejo ······ el desacuerdo, sin suavizar
+Puntos ciegos cazados ······· lo que solo apareció en la revisión
+Ranking del consejo ········· rango promedio por asesor, de la revisión ciega
+La recomendación ············ una respuesta real, no "depende"
+Lo primero que hay que hacer · un solo paso concreto
+```
 
 Adaptada del [LLM Council de Andrej Karpathy](https://github.com/karpathy/llm-council). Su versión envía la consulta a varios modelos de distintos laboratorios, hace que se puntúen entre ellos de forma anónima, y deja que un presidente redacte la respuesta final. Esta es esa misma tubería reconstruida para funcionar dentro de Claude Code, con una sustitución que se explica más abajo sin adornos.
 
@@ -204,7 +213,7 @@ La plantilla debe seguir siendo neutra: la comparten todos los que instalen la s
 ## Créditos
 
 - **Método:** [Andrej Karpathy — llm-council](https://github.com/karpathy/llm-council). La estructura de tres etapas, la revisión anónima entre pares, el formato estricto `FINAL RANKING:` y el promedio de rangos son suyos. Ese repositorio **no tenía licencia** cuando se escribió este (verificado el 2 de agosto de 2026), así que aquí no se afirma nada sobre sus términos — y no hizo falta, porque no se reproduce nada de su código ni de su texto. Lo que se reutiliza es el método, que su README y su `backend/council.py` describen abiertamente.
-- **Adaptación previa:** la idea de llevar el consejo a una skill de Claude con cinco lentes de pensamiento viene de una skill atribuida a [Ole Lehmann](https://x.com/itsolelehmann) y distribuida en [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), también sin licencia. Este repositorio **no comparte texto con ella** —medido: cero frases idénticas— y rehace el diseño: los revisores conservan su lente, se restaura el ranking de Karpathy, el presidente es el agente principal, los asesores leen archivos del proyecto, la búsqueda web es opcional y la salida es un veredicto en el chat más una transcripción.
+- **Adaptación previa:** la idea de llevar el consejo a una skill de Claude con cinco lentes de pensamiento se atribuye a [Ole Lehmann](https://x.com/olelehmann). Circula en al menos dos distribuciones casi idénticas —[tenfoldmarc/llm-council-skill](https://github.com/tenfoldmarc/llm-council-skill) y [aiwithremy/claude-skills-llm-council](https://github.com/aiwithremy/claude-skills-llm-council), cuyos `SKILL.md` coinciden en un 96% frase por frase— y ninguna de las dos tiene licencia. Este repositorio **no comparte texto con ninguna** —medido: cero frases idénticas— y rehace el diseño: los revisores conservan su lente, se restaura el ranking de Karpathy, el presidente es el agente principal, los asesores leen archivos del proyecto, la búsqueda web es opcional y la salida es un veredicto en el chat más una transcripción.
 - **Esta implementación:** [Carlos Padilla Bravo](https://github.com/Carlos-Padilla-Bravo).
 
 El contenido de este repositorio se publica bajo licencia MIT. Ver [LICENSE](./LICENSE).
