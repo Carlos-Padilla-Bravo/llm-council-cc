@@ -145,7 +145,7 @@ Two notes on why the reviewer prompt is shaped this way:
 
 **The ranking excludes the reviewer's own response.** Karpathy's models rank every response including their own — his README says otherwise, but `stage2_collect_rankings` sends one prompt containing all Stage 1 answers to every council model — and that is safe there because model identity is effectively hidden. Here it is not: a lens recognizes its own text instantly, and self-favoring has been observed in practice even with an explicit instruction against it. Since the reviewer can identify its own answer either way, excluding it structurally is more robust than prohibiting a bias the model will act on anyway. Every advisor still receives four rankings from four other lenses, on four-item lists — symmetric, so the averages stay comparable.
 
-Be aware this instruction is followed, not guaranteed: in measured runs roughly one reviewer in five still slips its own answer into the ranking, usually at the top. That is why Phase 3 checks compliance before aggregating instead of trusting the format.
+Be aware this instruction is followed, not guaranteed: in the one session measured under this rule, one of the five reviewers still slipped its own answer into the ranking and put it first. That is why Phase 3 checks compliance before aggregating instead of trusting the format.
 
 ## Phase 3: Chairman synthesis
 
@@ -153,7 +153,7 @@ You, the main agent, are the Chairman. You already hold the conversation context
 
 1. **Aggregate the rankings.** Parse each `FINAL RANKING:` block, map letters back to advisors, and compute each advisor's **average position**. Sort ascending, lower is better.
 
-   **Check compliance first — one reviewer in five gets this wrong.** Each ranking must list exactly four labels and must not contain the reviewer's own. Two failure modes, handled differently:
+   **Check compliance first — a reviewer sometimes gets this wrong.** Each ranking must list exactly four labels and must not contain the reviewer's own. Two failure modes, handled differently:
    - *Ranked five.* It simply included itself. Drop its own entry, close the gap, keep the rest.
    - *Ranked four but the wrong four* — its own is present and someone else's is missing. Discard that ranking entirely: it both self-promotes and denies a data point to whoever it dropped. Say so in the verdict.
 
